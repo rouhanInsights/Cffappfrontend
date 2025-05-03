@@ -1,27 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import styles from '../styles/EditProfileStyles';
 
-const genders = ['Male', 'Female', 'Other'];
-
 export default function EditProfileScreen({ navigation }) {
-  const [name, setName] = useState('Priya Sharma');
-  const [email, setEmail] = useState('priya@example.com');
-  const [gender, setGender] = useState('Female');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!name.trim() || !email.trim()) {
       Alert.alert('Error', 'Name and email cannot be empty.');
       return;
     }
 
-    Alert.alert('Profile Updated', `Name: ${name}\nEmail: ${email}\nGender: ${gender}`);
-    navigation.goBack();
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      const response = await fetch('http://10.0.2.2:5000/api/users/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name, email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Profile updated successfully.');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', data.error || 'Failed to update profile');
+      }
+    } catch (err) {
+      console.error('Update Profile Error:', err);
+      Alert.alert('Error', 'Something went wrong');
+    }
+    console.log('Fetched token:', token);
+
   };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const res = await fetch('http://10.0.2.2:5000/api/users/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          setName(data.name || '');
+          setEmail(data.email || '');
+        }
+      } catch (err) {
+        console.error('Fetch Profile Error:', err);
+      }
+      console.log('Fetched token:', token);
+
+    };
+
+    fetchProfile();
+  }, []);
 
   return (
     <View style={styles.container}>
-      {/* Profile Image */}
       <View style={styles.profileImageWrapper}>
         <Image
           source={{ uri: 'https://i.pravatar.cc/150?img=10' }}
@@ -47,19 +91,6 @@ export default function EditProfileScreen({ navigation }) {
         style={styles.input}
         keyboardType="email-address"
       />
-
-      <Text style={styles.label}>Gender</Text>
-      <View style={styles.genderContainer}>
-        {genders.map((g) => (
-          <TouchableOpacity
-            key={g}
-            style={[styles.genderButton, gender === g && styles.genderSelected]}
-            onPress={() => setGender(g)}
-          >
-            <Text style={gender === g ? styles.genderSelectedText : styles.genderText}>{g}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Save Changes</Text>

@@ -1,0 +1,177 @@
+import { StyleSheet, Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
+
+export default StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    paddingBottom: 1,
+  },
+  image: {
+    width: screenWidth,
+    height: 300,
+    resizeMode: 'cover',
+  },
+  detailCard: {
+    backgroundColor: '#fff',
+    width: '100%',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    marginTop: -20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  price: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#e53935',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 16,
+    color: '#555',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  badgeContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+    flexWrap: 'wrap',
+  },
+  badge: {
+    backgroundColor: '#e0f2f1',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  badgeText: {
+    color: '#00796b',
+    fontWeight: '500',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 18,
+    marginBottom: 6,
+    color: '#2e7d32',
+  },
+  deliveryText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+  },
+  cartActionContainer: {
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  addBtn: {
+    backgroundColor: '#2e7d32',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+  },
+  addBtnText: {
+    color: '#fff',
+    marginLeft: 6,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  qtySelector: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 6,
+  },
+  qtyText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  popupContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+    alignItems: 'center',
+  },
+  popupText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 10,
+    color: '#333',
+  },
+  popupLink: {
+    color: '#2e7d32',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+
+  // 🔄 Related Products
+  relatedCard: {
+    width: 140,
+    marginRight: 12,
+    backgroundColor: '#fafafa',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  relatedImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 8,
+    resizeMode: 'cover',
+    marginBottom: 8,
+  },
+  relatedName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  relatedPrice: {
+    fontSize: 14,
+    color: '#e53935',
+    fontWeight: '500',
+    marginBottom: 6,
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 8,
+  },
+  originalPrice: {
+    textDecorationLine: 'line-through',
+    textDecorationStyle: 'solid',
+    color: '#888',
+    marginRight: 8,
+  },
+  salePrice: {
+    color: '#E53935',
+    fontWeight: 'bold',
+  },
+});

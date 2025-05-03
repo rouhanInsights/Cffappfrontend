@@ -1,17 +1,19 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider as PaperProvider } from 'react-native-paper';
-import RootNavigator from './navigation/RootNavigator';
-import { CartProvider } from './context/CartContext'; // 🟡 Import the context
+import { AuthProvider } from './contexts/AuthContext';
+import { CartProvider } from './contexts/CartContext';
+import RootNavigator from './navigation/RootNavigator'; // ✅ Correct navigation entry
+import MainTabs from './navigation/MainTabs';
 
 export default function App() {
   return (
-    <CartProvider> {/* 🟢 Wrap CartProvider at the top */}
-      <PaperProvider>
+    <AuthProvider>
+      <CartProvider>
         <NavigationContainer>
           <RootNavigator />
+          
         </NavigationContainer>
-      </PaperProvider>
-    </CartProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }

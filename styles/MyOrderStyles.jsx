@@ -1,90 +1,115 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 const styles = StyleSheet.create({
-    container: {
-      padding: 10,
-      backgroundColor: '#f9d3d0',
-    },
-    orderCard: {
-      backgroundColor: '#f9f9f9',
-      borderRadius: 12,
-      padding: 15,
-      marginBottom: 20,
-      shadowColor: '#000',
-      shadowOpacity: 0.05,
-      shadowRadius: 5,
-      elevation: 3,
-    },
-    headerRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-    },
-    orderTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-    },
-    orderDate: {
-      fontWeight: 'bold',
-      color: '#333',
-    },
-    statusRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginVertical: 5,
-    },
-    label: {
-      fontWeight: '600',
-      marginBottom: 2,
-    },
-    value: {
-      fontWeight: '400',
-    },
-    total: {
-      fontWeight: '600',
-      marginTop: 10,
-      marginBottom: 5,
-    },
-    statusBadge: {
-      paddingHorizontal: 10,
-      paddingVertical: 3,
-      borderRadius: 12,
-      marginLeft: 5,
-    },
-    greenBadge: {
-      backgroundColor: '#b2f2bb',
-    },
-    orangeBadge: {
-      backgroundColor: '#ffe066',
-    },
-    badgeText: {
-      fontWeight: 'bold',
-      color: '#000',
-    },
-    productRow: {
-      flexDirection: 'row',
-      marginTop: 10,
-      alignItems: 'center',
-    },
-    productImage: {
-      width: 70,
-      height: 70,
-      borderRadius: 8,
-      marginRight: 10,
-    },
-    productDetails: {
-      flex: 1,
-    },
-    productName: {
-      fontWeight: '600',
-    },
-    productQty: {
-      marginVertical: 2,
-      color: '#555',
-    },
-    productPrice: {
-      fontWeight: 'bold',
-      color: '#e60000',
-    },
-  });
-  export default styles;
-  
+  container: {
+    paddingHorizontal: 16,
+    backgroundColor: '#f9f9f9',
+  },
+  heading: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+    color: '#2e7d32',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 40,
+    fontSize: 16,
+    color: '#777',
+  },
+  card: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  orderId: {
+    fontWeight: '600',
+    color: '#333',
+  },
+  orderDate: {
+    fontSize: 13,
+    color: '#666',
+  },
+  status: {
+    color: '#2e7d32',
+    fontWeight: '600',
+    marginTop: 6,
+  },
+  paymentInfo: {
+    fontSize: 13,
+    color: '#444',
+    marginTop: 2,
+  },
+  deliveryInfo: {
+    fontSize: 13,
+    color: '#444',
+    marginTop: 2,
+  },
+  slotInfo: {
+    fontSize: 13,
+    color: '#444',
+    marginTop: 2,
+  },
+  divider: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+    marginVertical: 10,
+  },
+  itemRow: {
+    flexDirection: 'row',
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  itemDetails: {
+    flex: 1,
+  },
+  itemName: {
+    fontWeight: '600',
+    fontSize: 15,
+    color: '#333',
+  },
+  itemQty: {
+    fontSize: 13,
+    color: '#666',
+  },
+  itemPrice: {
+    fontSize: 14,
+    color: '#e53935',
+    fontWeight: '600',
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopColor: '#eee',
+    borderTopWidth: 1,
+  },
+  totalLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  totalAmount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#2e7d32',
+  },
+});
+
+export default styles;

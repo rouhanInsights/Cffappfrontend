@@ -1,10 +1,10 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from '../screens/HomeScreen';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Myorders from '../screens/Myorders';
+import HomeStack from './HomeStack';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,9 +20,11 @@ export default function MainTabs() {
       }}
     >
       <Tab.Screen
+         
         name="Home"
-        component={HomeScreen}
+        component={HomeStack} 
         options={{
+          headerShown: false ,
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="home" color={color} size={size} />
           ),

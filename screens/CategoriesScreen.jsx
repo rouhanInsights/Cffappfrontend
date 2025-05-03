@@ -34,7 +34,10 @@ const CategoriesScreen = ({ navigation }) => {
           <TouchableOpacity
             key={index}
             style={styles.card}
-            onPress={() => navigation.navigate('CategoryDetail', { category: item.name })}
+            onPress={() => navigation.navigate('Home', {
+              screen: 'CategoryDetailScreen',
+              params: { category: item.name }
+            })}
           >
             <Image source={{ uri: item.image }} style={styles.image} />
             <View style={styles.overlay}>

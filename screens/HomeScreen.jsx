@@ -1,52 +1,17 @@
-import React, { useState } from 'react';
-import { View,  ScrollView, Text, ImageBackground } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, Text, ImageBackground, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/HomeStyles';
 import NavBar from '../components/Navbar';
 import ProductSection from '../screens/ProductSection';
-import Hero from '../assets/Hero.png'
+import Hero from '../assets/Hero.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import TopOfWeekSection from '../sections/TopOfWeekSection';
+import AllProductsSection from '../sections/AllProductsSection';
+import ExclusiveOffersSection from '../sections/ExclusiveOffersSection';
+import PreviouslyBoughtSection from '../sections/PreviouslyBoughtSection';
+const BASE_URL = 'http://10.0.2.2:5000'; // 👈 Change for production
 
-const DUMMY_PRODUCTS = [
-  {
-    id: 1,
-    name: 'Fresh Chicken Breast',
-    price: 249,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/Boneless-breasts.jpeg',
-    description: 'Boneless, skinless chicken breast perfect for grilling or pan-searing.',
-  },
-  {
-    id: 2,
-    name: 'Rohu Fish (Cleaned)',
-    price: 199,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/IMG_1122-scaled.jpg',
-  },
-  {
-    id: 3,
-    name: 'Mutton Curry Cut',
-    price: 499,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/Untitled-design-61-450x450-1.png',
-  },
-  {
-    id: 4,
-    name: 'Fresh Prawns',
-    price: 379,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/PRAWNS.jpg',
-  },
-  {
-    id: 5,
-    name: 'Kolkata Bhetki Paturi Pieces',
-    price: 299,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/Bhetki-Paturi..jpg',
-  },
-  {
-    id: 6,
-    name: 'KATLA-TAIL',
-    price: 229,
-    image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/KATLA-TAIL.jpg',
-  },
-];
-
-// 🆕 Hero Section Component
 const HeroSection = () => (
   <View style={{ margin: 16, borderRadius: 12, overflow: 'hidden' }}>
     <ImageBackground
@@ -55,7 +20,7 @@ const HeroSection = () => (
       resizeMode="cover"
     >
       <View style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.4)', // optional dark overlay for text readability
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
         padding: 16,
       }}>
         <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#fff' }}>
@@ -70,20 +35,63 @@ const HeroSection = () => (
 );
 
 const HomeScreen = () => {
+ 
   const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
+  const [previouslyBought, setPreviouslyBought] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+
+  const fetchData = async () => {
+    try {
+      const productRes = await fetch(`${BASE_URL}/api/products`);
+      const productData = await productRes.json();
+      if (productRes.ok) setProducts(productData);
+
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        const userRes =await fetch(`${BASE_URL}/api/orders/my-orders`,{
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userData = await userRes.json();
+        if (userRes.ok) {
+          const allItems = userData.flatMap(order => order.items || []);
+          const uniqueItems = Array.from(
+            new Map(allItems.map(item => [item.product_id, item])).values()
+          );
+          setPreviouslyBought(uniqueItems);
+        }
+      }
+    } catch (err) {
+      console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>
       <NavBar />
-      <View style={styles.container}>
-      <ScrollView>
-        <HeroSection /> {/* 👈 Add Hero Section here */}
-        <ProductSection title="Top of Week" products={DUMMY_PRODUCTS} />
-        <ProductSection title="All Products" products={DUMMY_PRODUCTS} />
-        <ProductSection title="Previously Bought" products={DUMMY_PRODUCTS} />
-        <ProductSection title="Exclusive Offers" products={DUMMY_PRODUCTS} />
+      <ScrollView style={styles.container}>
+        <HeroSection />
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#2e7d32" style={{ marginTop: 50 }} />
+        ) : (
+          <>
+            <TopOfWeekSection products={products} />
+            <AllProductsSection products={products} />
+            <ExclusiveOffersSection products={products} />
+            {previouslyBought.length > 0 && (
+              <PreviouslyBoughtSection products={previouslyBought} />
+            )}
+          </>
+        )}
       </ScrollView>
-    </View>
     </View>
   );
 };

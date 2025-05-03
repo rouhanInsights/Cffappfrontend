@@ -9,7 +9,9 @@ import CartScreen from '../screens/CartScreen';
 import CheckoutScreen from '../screens/CheckoutScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 import ProductDetails from '../screens/ProductDetails';
-
+import MyAddressScreen from '../screens/MyAddressScreen';
+import OrderSuccessScreen from '../screens/OrderSuccessScreen';
+import SearchScreen from '../screens/SearchScreen';
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -32,6 +34,10 @@ export default function RootNavigator() {
        <Stack.Screen name="Checkout" component={CheckoutScreen} />
        <Stack.Screen name="EditProfile" component={EditProfileScreen} options={{ title: 'Edit Profile' }} />
        <Stack.Screen name="ProductDetails" component={ProductDetails} />
+       <Stack.Screen name="MyAddress" component={MyAddressScreen} />
+       <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
+       <Stack.Screen name="Search" component={SearchScreen} />
+
     </Stack.Navigator>
   );
 }

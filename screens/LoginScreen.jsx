@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, ScrollView } from 'react-native';
+import { View, Text, FlatList, Image, ScrollView, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
-import styles from '../styles/LoginStyles'; // your extracted styles
+import styles from '../styles/LoginStyles';
+import { CommonActions } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const slides = [
   {
@@ -28,37 +30,87 @@ export default function LoginScreen({ navigation }) {
   const [otp, setOtp] = useState('');
   const [otpSent, setOtpSent] = useState(false);
 
-  // Autoplay slider
+  const BASE_URL = 'http://10.0.2.2:5000'; // 🔁 Replace with your actual local IP
+
+  // Slider autoplay
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentIndex + 1) % slides.length;
       flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
       setCurrentIndex(nextIndex);
     }, 3000);
-
     return () => clearInterval(interval);
   }, [currentIndex]);
 
-  const sendOtp = () => {
-    if (contact.trim() !== '') {
-      setOtpSent(true);
-      alert('OTP sent successfully to ' + contact);
-    } else {
-      alert('Please enter phone number or email');
+  const sendOtp = async () => {
+    if (contact.trim() === '') {
+      Alert.alert('Error', 'Please enter phone number or email');
+      return;
+    }
+
+    const body = contact.includes('@') ? { email: contact } : { phone: contact };
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/users/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setOtpSent(true);
+        Alert.alert('Success', data.message || 'OTP sent!');
+      } else {
+        Alert.alert('Error', data.error || 'OTP failed');
+      }
+    } catch (err) {
+      console.error('Send OTP Error:', err);
+      Alert.alert('Error', 'Network error');
     }
   };
 
-  const verifyOtp = () => {
-    if (otp === '123456') {
-      navigation.replace('Main');
-    } else {
-      alert('Invalid OTP. Try again.');
+  const verifyOtp = async () => {
+    if (otp.trim() === '') {
+      Alert.alert('Error', 'Enter OTP');
+      return;
+    }
+
+    const body = contact.includes('@')
+      ? { email: contact, otp_code: otp }
+      : { phone: contact, otp_code: otp };
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/users/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+       await AsyncStorage.setItem('token', data.token);
+        Alert.alert('Success', 'Login successful');
+
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
+          })
+        );
+      } else {
+        Alert.alert('Error', data.error || 'Invalid OTP');
+      }
+    } catch (err) {
+      console.error('Verify OTP Error:', err);
+      Alert.alert('Error', 'Network error');
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
-      {/* Slider */}
       <FlatList
         ref={flatListRef}
         data={slides}
@@ -74,7 +126,6 @@ export default function LoginScreen({ navigation }) {
         )}
       />
 
-      {/* Login Form */}
       <View style={styles.container}>
         <TextInput
           label="Phone or Email"
@@ -97,10 +148,6 @@ export default function LoginScreen({ navigation }) {
         <Button mode="contained" onPress={otpSent ? verifyOtp : sendOtp} style={styles.link}>
           {otpSent ? 'Verify OTP' : 'Send OTP'}
         </Button>
-
-        <Text onPress={() => navigation.navigate('Signup')} style={styles.link}>
-          Don't have an account? Sign up
-        </Text>
       </View>
     </ScrollView>
   );

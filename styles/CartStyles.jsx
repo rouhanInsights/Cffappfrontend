@@ -147,4 +147,21 @@ export default StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 80,
+  },
+  emptyText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#555',
+    marginBottom: 8,
+  },
+  emptySubtext: {
+    fontSize: 16,
+    color: '#888',
+  },
+  
 });

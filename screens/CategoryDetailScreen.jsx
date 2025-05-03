@@ -1,217 +1,133 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Image,
-  ActivityIndicator,
-  TouchableOpacity,
-  Animated,
+  View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, ScrollView
 } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { Picker } from '@react-native-picker/picker';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from '../styles/CategoryDetailStyles';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useCart } from '../contexts/CartContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavBar from '../components/Navbar';
-import { useCart } from '../context/CartContext';
 
-const mockProducts = {
-  'Exclusive Fish & Meat': [
-    {
-      id: 5,
-      name: 'Kolkata Bhetki Paturi Pieces',
-      price: 299,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/Bhetki-Paturi..jpg',
-    },
-    {
-      id: 6,
-      name: 'KATLA-TAIL',
-      price: 229,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/KATLA-TAIL.jpg',
-    },
-  ],
-  'Fish & Seafood': [
-    {
-      id: 4,
-      name: 'Fresh Prawns',
-      price: 379,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/PRAWNS.jpg',
-    },
-    {
-      id: 2,
-      name: 'Rohu Fish (Cleaned)',
-      price: 199,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/IMG_1122-scaled.jpg',
-    },
-  ],
-  Mutton: [
-    {
-      id: 3,
-      name: 'Mutton Curry Cut',
-      price: 499,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/03/Untitled-design-61-450x450-1.png',
-    },
-  ],
-  Poultry: [
-    {
-      id: 1,
-      name: 'Fresh Chicken Breast',
-      price: 249,
-      image: 'https://calcuttafreshfoods.com/wp-content/uploads/2022/08/Boneless-breasts.jpeg',
-    },
-  ],
-  'Steak & Fillets': [
-    {
-      id: 7,
-      name: 'Salmon Fillet',
-      price: 899,
-      image: 'https://via.placeholder.com/100',
-    },
-  ],
-};
+const BASE_URL = 'http://10.0.2.2:5000';
 
-const CategoryDetailScreen = () => {
+const ALL_CATEGORIES = [
+  'Exclusive Fish & Meat',
+  'Fish & Seafood',
+  'Mutton',
+  'Poultry',
+  'Steak & Fillets',
+];
+
+export default function CategoryDetailScreen() {
   const route = useRoute();
   const navigation = useNavigation();
-  const initialCategory = route.params.category;
+  const { addToCart, incrementQty, decrementQty, cartItems } = useCart();
+  const initialCategory = route.params?.category || ALL_CATEGORIES[0];
+
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const { cartItems, addToCart, incrementQty, decrementQty } = useCart();
-
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupMessage, setPopupMessage] = useState('');
-  const [slideAnim] = useState(new Animated.Value(100));
-
-  const triggerPopup = (message) => {
-    setPopupMessage(message);
-    setShowPopup(true);
-
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-
-    setTimeout(() => {
-      Animated.timing(slideAnim, {
-        toValue: 100,
-        duration: 300,
-        useNativeDriver: true,
-      }).start(() => setShowPopup(false));
-    }, 2500);
-  };
-
-  const calculateCartTotal = (cartObj) =>
-    Object.values(cartObj).reduce((sum, qty) => sum + qty, 0);
-
-  const handleIncrement = (id) => {
-    incrementQty(id);
-    const total = calculateCartTotal(cartItems) + 1;
-    triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
-  };
-
-  const handleDecrement = (id) => {
-    decrementQty(id);
-    const total = Math.max(calculateCartTotal(cartItems) - 1, 0);
-    triggerPopup(`${total} item${total !== 1 ? 's' : ''} in cart`);
+  const fetchCategoryProducts = async (categoryName) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/products/category?name=${encodeURIComponent(categoryName)}`);
+      const data = await res.json();
+      if (res.ok) setProducts(data);
+    } catch (err) {
+      console.error('Failed to load category products:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setProducts(mockProducts[selectedCategory] || []);
-      setLoading(false);
-    }, 500);
+    fetchCategoryProducts(selectedCategory);
   }, [selectedCategory]);
 
-  const renderProduct = ({ item }) => {
-    const quantity = cartItems[item.id] || 0;
+  const renderItem = ({ item }) => {
+    const quantity = cartItems[item.product_id] || 0;
 
     return (
       <View style={styles.card}>
-        <Image source={{ uri: item.image }} style={styles.image} />
-        <View style={styles.info}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}>₹{item.price}</Text>
-
-          {quantity === 0 ? (
-            <TouchableOpacity
-              style={styles.addToCartButton}
-              onPress={() => {
-                addToCart(item.id);
-                const total = calculateCartTotal(cartItems) + 1;
-                triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
-              }}
-            >
-              <Ionicons name="cart-outline" size={20} color="#fff" />
-              <Text style={styles.addToCartText}>Add to Cart</Text>
-            </TouchableOpacity>
+        <Image source={{ uri: item.image_url }} style={styles.image} />
+        <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { product: item })}>
+                    <Text style={styles.name}>{item.name}</Text>
+                </TouchableOpacity>
+        <Text style={styles.price}>
+          {item.sale_price ? (
+            <>
+              <Text style={styles.strike}>₹{item.price}</Text>
+              {' '}
+              <Text style={styles.sale}>₹{item.sale_price}</Text>
+            </>
           ) : (
-            <View style={styles.qtySelector}>
-              <TouchableOpacity onPress={() => handleDecrement(item.id)}>
-                <Ionicons name="remove-circle-outline" size={24} color="#000" />
-              </TouchableOpacity>
-              <Text style={styles.qtyText}>{quantity}</Text>
-              <TouchableOpacity onPress={() => handleIncrement(item.id)}>
-                <Ionicons name="add-circle-outline" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
+            <>₹{item.price}</>
           )}
-        </View>
+        </Text>
+
+        {quantity === 0 ? (
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => addToCart(item.product_id)}
+          >
+            <Ionicons name="cart-outline" size={18} color="#fff" />
+            <Text style={styles.addButtonText}>Add to Cart</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.qtySelector}>
+            <TouchableOpacity onPress={() => decrementQty(item.product_id)}>
+              <Ionicons name="remove-circle-outline" size={24} />
+            </TouchableOpacity>
+            <Text style={styles.qtyText}>{quantity}</Text>
+            <TouchableOpacity onPress={() => incrementQty(item.product_id)}>
+              <Ionicons name="add-circle-outline" size={24} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     );
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <NavBar />
-      <View style={styles.headerRow}>
-        <Text style={styles.heading}>Category:</Text>
-        <Picker
-          selectedValue={selectedCategory}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-          style={styles.picker}
-          dropdownIconColor="#fff"
-        >
-          {Object.keys(mockProducts).map((cat) => (
-            <Picker.Item label={cat} value={cat} key={cat} />
+      <View style={styles.container}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+          {ALL_CATEGORIES.map((cat) => (
+            <TouchableOpacity
+              key={cat}
+              onPress={() => setSelectedCategory(cat)}
+              style={[
+                styles.filterButton,
+                selectedCategory === cat && { backgroundColor: '#2e7d32' },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  selectedCategory === cat && { color: '#fff' },
+                ]}
+              >
+                {cat}
+              </Text>
+            </TouchableOpacity>
           ))}
-        </Picker>
+        </ScrollView>
+
+        <Text style={styles.heading}>{selectedCategory}</Text>
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#2e7d32" style={{ marginTop: 50 }} />
+        ) : (
+          <FlatList
+            data={products}
+            keyExtractor={(item) => item.product_id.toString()}
+            renderItem={renderItem}
+            contentContainerStyle={styles.list}
+          />
+        )}
       </View>
-
-      {loading ? (
-        <ActivityIndicator size="large" color="#2e7d32" />
-      ) : products.length > 0 ? (
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderProduct}
-          contentContainerStyle={{ paddingBottom: 80 }}
-        />
-      ) : (
-        <Text style={styles.emptyText}>No products found.</Text>
-      )}
-
-      {showPopup && (
-        <Animated.View
-          style={[
-            styles.popupContainer,
-            {
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <Text style={styles.popupText}>{popupMessage}</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-            <Text style={styles.popupLink}>View Cart</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
     </View>
   );
-};
-
-export default CategoryDetailScreen;
+}

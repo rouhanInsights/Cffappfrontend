@@ -35,7 +35,9 @@ export const CartProvider = ({ children }) => {
       };
     });
   };
-
+  const clearCart = () => {
+    setCartItems({});
+  };
   const getTotalQuantity = () =>
     Object.values(cartItems).reduce((sum, qty) => sum + qty, 0);
 
@@ -47,6 +49,7 @@ export const CartProvider = ({ children }) => {
         incrementQty,
         decrementQty,
         getTotalQuantity,
+        clearCart,
       }}
     >
       {children}

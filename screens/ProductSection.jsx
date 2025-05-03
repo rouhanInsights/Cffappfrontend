@@ -8,7 +8,7 @@ import {
     Animated,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../contexts/CartContext';
 import styles from '../styles/HomeStyles';
 import { useNavigation } from '@react-navigation/native';
 
@@ -43,53 +43,74 @@ const ProductSection = ({ title, products }) => {
 
     const calculateCartTotal = (cartObj) =>
         Object.values(cartObj).reduce((sum, qty) => sum + qty, 0);
-      
-      const handleIncrement = (id) => {
+
+    const handleIncrement = (id) => {
         incrementQty(id);
         setTimeout(() => {
-          const total = calculateCartTotal(cartItems) + 1; // anticipating increment
-          triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
+            const total = calculateCartTotal(cartItems) + 1; // anticipating increment
+            triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
         }, 100);
-      };
-      
-      const handleDecrement = (id) => {
+    };
+
+    const handleDecrement = (id) => {
         decrementQty(id);
         setTimeout(() => {
-          const total = Math.max(calculateCartTotal(cartItems) - 1, 0); // anticipating decrement
-          triggerPopup(`${total} item${total !== 1 ? 's' : ''} in cart`);
+            const total = Math.max(calculateCartTotal(cartItems) - 1, 0); // anticipating decrement
+            triggerPopup(`${total} item${total !== 1 ? 's' : ''} in cart`);
         }, 100);
-      };
+    };
 
     const renderProduct = ({ item }) => {
-        const quantity = cartItems[item.id] || 0;
+        const quantity = cartItems[item.product_id] || 0;
 
         return (
             <View style={styles.horizontalCard}>
-                <Image source={{ uri: item.image }} style={styles.horizontalImage} />
+                <View style={{ position: 'relative', alignItems: 'center' }}>
+                    <Image source={{ uri: item.image_url }} style={styles.horizontalImage} />
+
+                    {item.sale_price && (
+                        <View style={styles.ribbonContainer}>
+                            <Text style={styles.ribbonText}>SALE</Text>
+                        </View>
+                    )}
+                </View>
                 <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { product: item })}>
-  <Text style={styles.horizontalTitle}>{item.name}</Text>
-</TouchableOpacity>
-                <Text style={styles.horizontalPrice}>₹{item.price}</Text>
+                    <Text style={styles.horizontalTitle}>{item.name}</Text>
+                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    {item.sale_price ? (
+                        <>
+                            <Text style={[styles.horizontalPrice, { textDecorationLine: 'line-through', color: '#999' }]}>
+                                ₹{item.price}
+                            </Text>
+                            <Text style={[styles.horizontalPrice, { color: '#d32f2f', fontWeight: 'bold' }]}>
+                                ₹{item.sale_price}
+                            </Text>
+                        </>
+                    ) : (
+                        <Text style={styles.horizontalPrice}>₹{item.price}</Text>
+                    )}
+                </View>
 
                 {quantity === 0 ? (
                     <TouchableOpacity
-                    style={styles.addToCartButton}
-                    onPress={() => {
-                      addToCart(item.id);
-                      const total = calculateCartTotal(cartItems) + 1;
-                      triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
-                    }}
-                  >
+                        style={styles.addToCartButton}
+                        onPress={() => {
+                            addToCart(item.product_id);
+                            const total = calculateCartTotal(cartItems) + 1;
+                            triggerPopup(`${total} item${total > 1 ? 's' : ''} in cart`);
+                        }}
+                    >
                         <Ionicons name="cart-outline" size={20} color="#fff" />
                         <Text style={styles.addToCartText}>Add to Cart</Text>
                     </TouchableOpacity>
                 ) : (
                     <View style={styles.qtySelector}>
-                        <TouchableOpacity onPress={() => handleDecrement(item.id)}>
+                        <TouchableOpacity onPress={() => handleDecrement(item.product_id)}>
                             <Ionicons name="remove-circle-outline" size={24} color="#000" />
                         </TouchableOpacity>
                         <Text style={styles.qtyText}>{quantity}</Text>
-                        <TouchableOpacity onPress={() => handleIncrement(item.id)}>
+                        <TouchableOpacity onPress={() => handleIncrement(item.product_id)}>
                             <Ionicons name="add-circle-outline" size={24} color="#000" />
                         </TouchableOpacity>
                     </View>
@@ -103,7 +124,7 @@ const ProductSection = ({ title, products }) => {
             <Text style={styles.topTitle}>{title}</Text>
             <FlatList
                 data={products}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item, index) => item?.product_id?.toString?.() || index.toString()}
                 renderItem={renderProduct}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -120,7 +141,9 @@ const ProductSection = ({ title, products }) => {
                     ]}
                 >
                     <Text style={styles.popupText}>{popupMessage}</Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Home', {
+                        screen: 'CartScreen'
+                    })}>
                         <Text style={styles.popupLink}>View Cart</Text>
                     </TouchableOpacity>
                 </Animated.View>
