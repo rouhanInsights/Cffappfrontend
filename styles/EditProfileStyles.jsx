@@ -1,84 +1,53 @@
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
-    flex: 1,
+    padding: 20,
     backgroundColor: '#fff',
-    padding: 24,
+    flexGrow: 1,
+  },
+  profileImageWrapper: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: '#81991f',
   },
   title: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#1A1A1A',
-    alignSelf: 'center',
-    marginVertical: 16,
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1c2b31',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   label: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#555',
-    marginTop: 16,
-    marginBottom: 4,
+    fontWeight: 'bold',
+    color: '#1c2b31',
+    marginTop: 15,
+    marginBottom: 5,
   },
   input: {
-    height: 44,
     borderWidth: 1,
-    borderColor: '#4CAF50',
+    borderColor: '#ccc',
     borderRadius: 8,
-    paddingHorizontal: 12,
+    padding: 10,
     fontSize: 16,
-    backgroundColor: '#F9F9F9',
-  },
-  genderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  genderButton: {
-    flex: 1,
-    paddingVertical: 10,
-    marginHorizontal: 4,
-    borderWidth: 1,
-    borderColor: '#4CAF50',
-    borderRadius: 8,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  genderSelected: {
-    backgroundColor: '#4CAF50',
-  },
-  genderText: {
-    color: '#4CAF50',
-    fontWeight: '500',
-  },
-  genderSelectedText: {
-    color: '#fff',
-    fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: '#F57C00',
-    paddingVertical: 14,
+    backgroundColor: '#81991f',
+    padding: 14,
     borderRadius: 10,
-    marginTop: 32,
+    marginTop: 30,
     alignItems: 'center',
   },
   saveButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  profileImageWrapper: {
-    alignItems: 'center',
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: '#4CAF50',
+    fontWeight: 'bold',
   },
 });
-
-export default styles;
