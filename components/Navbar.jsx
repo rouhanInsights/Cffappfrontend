@@ -58,7 +58,9 @@ const NavBar = () => {
           <Ionicons name="chevron-down" size={18} color="#444" />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home', {
+                                screen: 'CartScreen'
+                            })}>
           <View style={styles.cartContainer}>
             <Ionicons name="cart-outline" size={26} color="#333" />
             {getTotalQuantity() > 0 && (

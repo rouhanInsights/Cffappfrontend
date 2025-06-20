@@ -132,32 +132,64 @@ const ProductDetails = ({ route }) => {
             <>
               <Text style={styles.sectionTitle}>Related Items</Text>
               <FlatList
-                data={relatedItems}
-                keyExtractor={(item) => item.product_id.toString()}
+                data={
+                  relatedItems.length > 6
+                    ? [...relatedItems.slice(0, 6), { viewAll: true }]
+                    : relatedItems
+                }
+                keyExtractor={(item, index) =>
+                  item.viewAll ? 'view-all' : item.product_id.toString()
+                }
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingVertical: 12 }}
                 renderItem={({ item }) => {
+                  if (item.viewAll) {
+                    return (
+                      <TouchableOpacity
+                        onPress={() => navigation.navigate('RelatedItemsScreen', {
+                          categoryId: product.category_id
+                        })}
+                        style={[styles.relatedCard, styles.viewAllCard]}
+                      >
+                        <Text style={styles.viewAllText}>View All</Text>
+                      </TouchableOpacity>
+                    );
+                  }
+
                   const relatedQty = cartItems[item.product_id] || 0;
+
                   return (
                     <View style={styles.relatedCard}>
                       <Image source={{ uri: item.image_url }} style={styles.relatedImage} />
                       <TouchableOpacity onPress={() => navigation.navigate('ProductDetails', { product: item })}>
-
-
                         <Text style={styles.relatedName} numberOfLines={1}>
                           {item.name}
                         </Text>
                       </TouchableOpacity>
-                      <Text style={styles.relatedPrice}>₹{item.sale_price || item.price}</Text>
-
+                      <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+                        {item.sale_price ? (
+                          <>
+                            <Text style={{ color: '#888', textDecorationLine: 'line-through' }}>
+                              ₹{item.price}
+                            </Text>
+                            <Text style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+                              ₹{item.sale_price}
+                            </Text>
+                          </>
+                        ) : (
+                          <Text style={{ color: '#333', fontWeight: '600' }}>
+                            ₹{item.price}
+                          </Text>
+                        )}
+                      </View>
                       {relatedQty === 0 ? (
                         <TouchableOpacity
                           style={styles.addBtn}
                           onPress={() => handleAddToCart(item.product_id)}
                         >
                           <Ionicons name="cart-outline" size={18} color="#fff" />
-                          <Text style={styles.addBtnText}>Add</Text>
+                          <Text style={styles.addBtnText}>Add to cart</Text>
                         </TouchableOpacity>
                       ) : (
                         <View style={styles.qtySelector}>
@@ -174,6 +206,7 @@ const ProductDetails = ({ route }) => {
                   );
                 }}
               />
+
             </>
           )}
         </View>
@@ -184,7 +217,10 @@ const ProductDetails = ({ route }) => {
             style={[styles.popupContainer, { transform: [{ translateY: slideAnim }] }]}
           >
             <Text style={styles.popupText}>{popupMessage}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+           
+                   <TouchableOpacity onPress={() => navigation.navigate('Home', {
+                                           screen: 'CartScreen'
+                                       })}>
               <Text style={styles.popupLink}>View Cart</Text>
             </TouchableOpacity>
           </Animated.View>

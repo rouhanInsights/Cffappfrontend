@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, StatusBar } from 'react-native';
 import { Button } from 'react-native-paper';
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'; // ✅ required
+
+const onboardingImage = resolveAssetSource(require('../images/onboarding.asset.jpg')); // ✅ disable autolinking
 
 export default function OnboardingScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <Image
-        source={require('../assets/onboarding-illustration.png')} 
+        source={onboardingImage}
         style={styles.image}
         resizeMode="contain"
       />
@@ -41,7 +44,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#2e7d32', // dark green
+    color: '#2e7d32',
     marginBottom: 10,
     textAlign: 'center',
   },
@@ -54,7 +57,7 @@ const styles = StyleSheet.create({
   button: {
     width: '80%',
     borderRadius: 30,
-    backgroundColor: '#43a047', // vibrant green
+    backgroundColor: '#43a047',
     paddingVertical: 8,
   },
   buttonLabel: {

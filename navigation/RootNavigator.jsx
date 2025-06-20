@@ -12,6 +12,7 @@ import ProductDetails from '../screens/ProductDetails';
 import MyAddressScreen from '../screens/MyAddressScreen';
 import OrderSuccessScreen from '../screens/OrderSuccessScreen';
 import SearchScreen from '../screens/SearchScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
@@ -37,6 +38,8 @@ export default function RootNavigator() {
        <Stack.Screen name="MyAddress" component={MyAddressScreen} />
        <Stack.Screen name="OrderSuccess" component={OrderSuccessScreen} />
        <Stack.Screen name="Search" component={SearchScreen} />
+ 
+
 
     </Stack.Navigator>
   );

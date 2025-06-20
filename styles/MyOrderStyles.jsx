@@ -110,6 +110,22 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#2e7d32',
   },
+  loadMoreButton: {
+    marginTop: 20,
+    marginBottom: 40,
+    backgroundColor: '#2e7d32',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    alignSelf: 'center',
+    minWidth: 120,
+  },
+  loadMoreText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
+  }
+  
 });
 
 export default styles;

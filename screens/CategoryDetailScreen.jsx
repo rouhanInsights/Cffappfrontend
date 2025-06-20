@@ -27,6 +27,7 @@ export default function CategoryDetailScreen() {
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  
 
   const fetchCategoryProducts = async (categoryName) => {
     setLoading(true);

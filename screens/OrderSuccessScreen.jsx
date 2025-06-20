@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 const OrderSuccessScreen = () => {
   const navigation = useNavigation();
 
@@ -12,7 +12,7 @@ const OrderSuccessScreen = () => {
       routes: [{ name: 'Main' }],
     });
   };
-
+ const successImage = resolveAssetSource(require('../images/ordersuccess.asset.jpg'));
   return (
     <View style={styles.container}>
       <Ionicons name="checkmark-circle" size={100} color="#2e7d32" />
@@ -20,13 +20,13 @@ const OrderSuccessScreen = () => {
       <Text style={styles.subtitle}>Your order was placed successfully.</Text>
 
       <Image
-        source={require('../assets/order_success.png')} // Optional success image
+        source={successImage} // Optional success image
         style={styles.image}
         resizeMode="contain"
       />
 
       <TouchableOpacity style={styles.button} onPress={handleGoToOrders}>
-        <Text style={styles.buttonText}>Home</Text>
+        <Text style={styles.buttonText}>Return to Home</Text>
       </TouchableOpacity>
     </View>
   );

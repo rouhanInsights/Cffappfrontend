@@ -1,11 +1,10 @@
-const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+const { getDefaultConfig, mergeConfig } = require("@react-native/metro-config");
 
-/**
- * Metro configuration
- * https://reactnative.dev/docs/metro
- *
- * @type {import('@react-native/metro-config').MetroConfig}
- */
-const config = {};
-
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+module.exports = mergeConfig(getDefaultConfig(__dirname), {
+  transformer: {
+    assetPlugins: [], // ⛔ disables image asset registration (no linking to drawable-mdpi)
+  },
+  resolver: {
+    assetExts: ['png', 'jpg', 'jpeg', 'svg'], // Add all formats you use
+  },
+});

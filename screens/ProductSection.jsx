@@ -123,14 +123,28 @@ const ProductSection = ({ title, products }) => {
         <View>
             <Text style={styles.topTitle}>{title}</Text>
             <FlatList
-                data={products}
-                keyExtractor={(item, index) => item?.product_id?.toString?.() || index.toString()}
-                renderItem={renderProduct}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalList}
-            />
-
+  data={[...products.slice(0, 5), { isViewAll: true }]}
+  keyExtractor={(item, index) => {
+    if (item?.isViewAll) return `viewAll-${index}`;
+    return item?.product_id?.toString?.() || `item-${index}`;
+  }}
+  renderItem={({ item }) =>
+    item.isViewAll ? (
+      <TouchableOpacity
+        style={styles.viewAllCard}
+        onPress={() => navigation.navigate('ViewAllProducts', { title, products })}
+      >
+        <Text style={styles.viewAllText}>View All</Text>
+        <Ionicons name="chevron-forward-circle" size={28} color="#81991f" />
+      </TouchableOpacity>
+    ) : (
+      renderProduct({ item })
+    )
+  }
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.horizontalList}
+/>
             {showPopup && (
                 <Animated.View
                     style={[

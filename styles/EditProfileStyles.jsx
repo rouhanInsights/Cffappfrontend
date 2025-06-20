@@ -50,4 +50,20 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  
+  picker: {
+    height: 50,
+    width: '100%',
+  },
+  imagePickerText:{
+    
+  }
+  
 });

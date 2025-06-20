@@ -7,10 +7,10 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useCart } from '../contexts/CartContext';
-import styles from '../styles/CartStyles';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavBar from '../components/Navbar';
+import styles from '../styles/CartStyles';
 
 const BASE_URL = 'http://10.0.2.2:5000';
 
@@ -18,14 +18,18 @@ const CartScreen = () => {
   const { cartItems, addToCart, incrementQty, decrementQty } = useCart();
   const navigation = useNavigation();
   const [allProducts, setAllProducts] = useState([]);
-  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [randomProducts, setRandomProducts] = useState([]);
 
+  // Fetch all products once
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch(`${BASE_URL}/api/products`);
         const data = await res.json();
-        if (res.ok) setAllProducts(data);
+        if (res.ok) {
+          setAllProducts(data);
+          setRandomProducts(getRandomProducts(data, 5)); // Get 5 random products
+        }
       } catch (err) {
         console.error('Failed to fetch products:', err);
       }
@@ -33,6 +37,11 @@ const CartScreen = () => {
 
     fetchProducts();
   }, []);
+
+  const getRandomProducts = (products, number) => {
+    const shuffled = products.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, number);
+  };
 
   const productList = Object.entries(cartItems)
     .map(([productId, qty]) => {
@@ -46,25 +55,6 @@ const CartScreen = () => {
     const price = item.sale_price || item.price;
     return sum + price * item.quantity;
   }, 0);
-
-  useEffect(() => {
-    const fetchRelated = async () => {
-      if (productList.length === 0) return;
-      const firstItem = productList[0];
-
-      try {
-        const res = await fetch(
-          `${BASE_URL}/api/products/related/${firstItem.category_id}/${firstItem.product_id}`
-        );
-        const data = await res.json();
-        if (res.ok) setRelatedProducts(data);
-      } catch (err) {
-        console.error('Failed to fetch related products:', err);
-      }
-    };
-
-    fetchRelated();
-  }, [productList]);
 
   const renderItem = ({ item }) => (
     <View style={styles.cartItem}>
@@ -100,38 +90,6 @@ const CartScreen = () => {
     </View>
   );
 
-  const renderSuggestion = ({ item }) => {
-    const quantity = cartItems[item.product_id] || 0;
-
-    return (
-      <View style={styles.suggestionCard}>
-        <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
-        <Text style={styles.suggestionName}>{item.name}</Text>
-        <Text style={styles.suggestionPrice}>₹{item.sale_price || item.price}</Text>
-
-        {quantity === 0 ? (
-          <TouchableOpacity
-            style={styles.addToCartButton}
-            onPress={() => addToCart(item.product_id)}
-          >
-            <Ionicons name="cart-outline" size={20} color="#fff" />
-            <Text style={styles.addToCartText}>Add to Cart</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.qtySelector}>
-            <TouchableOpacity onPress={() => decrementQty(item.product_id)}>
-              <Ionicons name="remove-circle-outline" size={24} color="#000" />
-            </TouchableOpacity>
-            <Text style={styles.qtyText}>{quantity}</Text>
-            <TouchableOpacity onPress={() => incrementQty(item.product_id)}>
-              <Ionicons name="add-circle-outline" size={24} color="#000" />
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    );
-  };
-
   return (
     <View style={{ flex: 1 }}>
       <NavBar />
@@ -157,18 +115,42 @@ const CartScreen = () => {
                   onPress={() => navigation.navigate('Home', {
                     screen: 'CheckoutScreen'
                   })}>
-                
                   <Text style={styles.checkoutText}>Proceed to Checkout</Text>
                 </TouchableOpacity>
               </View>
 
-              {relatedProducts.length > 0 && (
+              {randomProducts.length > 0 && (
                 <>
                   <Text style={styles.suggestionTitle}>You may also like</Text>
                   <FlatList
-                    data={relatedProducts}
+                    data={randomProducts}
                     keyExtractor={(item) => item.product_id.toString()}
-                    renderItem={renderSuggestion}
+                    renderItem={({ item }) => (
+                      <View style={styles.suggestionCard}>
+                        <Image source={{ uri: item.image_url }} style={styles.suggestionImage} />
+                        <Text style={styles.suggestionName}>{item.name}</Text>
+                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    {item.sale_price ? (
+                        <>
+                            <Text style={[styles.horizontalPrice, { textDecorationLine: 'line-through', color: '#999' }]}>
+                                ₹{item.price}
+                            </Text>
+                            <Text style={[styles.horizontalPrice, { color: '#d32f2f', fontWeight: 'bold' }]}>
+                                ₹{item.sale_price}
+                            </Text>
+                        </>
+                    ) : (
+                        <Text style={styles.horizontalPrice}>₹{item.price}</Text>
+                    )}
+                </View>
+                        <TouchableOpacity
+                          style={styles.addToCartButton}
+                          onPress={() => addToCart(item.product_id)}>
+                          <Ionicons name="cart-outline" size={20} color="#fff" />
+                          <Text style={styles.addToCartText}>Add to Cart</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.suggestionList}

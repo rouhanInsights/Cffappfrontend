@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   Text, View, Image, TouchableOpacity, ScrollView
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import styles from '../styles/ProfileStyles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
@@ -13,20 +13,22 @@ export default function ProfileScreen() {
   const [userName, setUserName] = useState('');
   const [userPhone, setUserPhone] = useState('');
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = await AsyncStorage.getItem('token');
-      const res = await fetch('http://10.0.2.2:5000/api/users/profile', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setUserName(data.name);
-        setUserPhone(data.phone);
-      }
-    };
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchUser = async () => {
+        const token = await AsyncStorage.getItem('token');
+        const res = await fetch('http://10.0.2.2:5000/api/users/profile', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setUserName(data.name);
+          setUserPhone(data.phone);
+        }
+      };
+      fetchUser();
+    }, [])
+  );
 
   const ProfileItem = ({ icon, label, onPress, iconColor = '#333' }) => (
     <TouchableOpacity style={styles.item} onPress={onPress}>

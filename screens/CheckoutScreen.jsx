@@ -1,12 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, TouchableOpacity, ScrollView, Alert
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
-import styles from '../styles/CheckoutStyles';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar';
 import { useCart } from '../contexts/CartContext';
+import styles from '../styles/CheckoutStyles';
+
+// ✅ Bulletproof delivery date calculator
+const getBaseDeliveryDate = () => {
+  const now = new Date();
+  const midnightToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const baseDate = new Date(midnightToday);
+  if (now.getHours() >= 9) {
+    baseDate.setDate(baseDate.getDate() + 1);
+  }
+  return baseDate;
+};
 
 const CheckoutScreen = () => {
   const navigation = useNavigation();
@@ -17,15 +33,24 @@ const CheckoutScreen = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [deliveryDate, setDeliveryDate] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('Cash on Delivery');
+  const [paymentMethod, setPaymentMethod] = useState('COD');
   const [allProducts, setAllProducts] = useState([]);
   const [isAfter9am, setIsAfter9am] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const BASE_URL = 'http://10.0.2.2:5000';
 
+  const paymentOptions = [
+    { value: 'COD', label: 'Cash on Delivery' },
+    { value: 'UPI', label: 'UPI / Google Pay / PhonePe' },
+    { value: 'NETBANKING', label: 'Net Banking' },
+    { value: 'CARD', label: 'Credit / Debit Card' },
+  ];
+
   useEffect(() => {
-    const initCheckout = async () => {
+    const fetchData = async () => {
       try {
+        setLoading(true);
         const token = await AsyncStorage.getItem('token');
 
         const addrRes = await fetch(`${BASE_URL}/api/users/addresses`, {
@@ -34,7 +59,7 @@ const CheckoutScreen = () => {
         const addrData = await addrRes.json();
         if (addrRes.ok) {
           setAddresses(addrData);
-          const defaultAddr = addrData.find(a => a.is_default) || addrData[0];
+          const defaultAddr = addrData.find((a) => a.is_default) || addrData[0];
           setSelectedAddress(defaultAddr);
         }
 
@@ -45,43 +70,42 @@ const CheckoutScreen = () => {
           setSelectedSlotId(slotData[0]?.slot_id);
         }
 
-        const productRes = await fetch(`${BASE_URL}/api/products`);
-        const productData = await productRes.json();
-        if (productRes.ok) setAllProducts(productData);
+        const prodRes = await fetch(`${BASE_URL}/api/products`);
+        const prodData = await prodRes.json();
+        if (prodRes.ok) setAllProducts(prodData);
 
         const now = new Date();
-        const after9 = now.getHours() >= 9;
-        setIsAfter9am(after9);
-        const baseDate = after9 ? new Date(now.setDate(now.getDate() + 1)) : now;
+        const baseDate = getBaseDeliveryDate();
+        setIsAfter9am(now.getHours() >= 9);
         setDeliveryDate(baseDate.toISOString().split('T')[0]);
-
-      } catch (err) {
-        console.error('Checkout init error:', err);
+      } catch (error) {
+        console.error('Checkout Error:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    initCheckout();
+    fetchData();
   }, []);
 
   const cartProductList = Object.entries(cartItems)
     .map(([id, qty]) => {
-      const product = allProducts.find(p => p.product_id === parseInt(id));
+      const product = allProducts.find((p) => p.product_id === parseInt(id));
       if (!product) return null;
       return {
         ...product,
         quantity: qty,
-        price: product.sale_price || product.price
+        price: product.sale_price || product.price,
       };
     })
     .filter(Boolean);
 
   const subtotal = cartProductList.reduce(
-    (sum, item) => sum + item.price * item.quantity, 0
+    (sum, item) => sum + item.quantity * item.price,
+    0
   );
   const shippingFee = 30;
   const total = subtotal + shippingFee;
-
-  const paymentOptions = ['Cash on Delivery', 'UPI', 'Net Banking', 'Credit/Debit Card'];
 
   const handleConfirmOrder = async () => {
     if (!selectedAddress || !paymentMethod || !selectedSlotId || !deliveryDate) {
@@ -92,19 +116,18 @@ const CheckoutScreen = () => {
     try {
       const token = await AsyncStorage.getItem('token');
 
-      const items = cartProductList.map(item => ({
-        id: item.product_id,
-        quantity: item.quantity,
-        price: item.price
-      }));
-
       const orderPayload = {
         total,
         address: `${selectedAddress.address_line1}, ${selectedAddress.city} - ${selectedAddress.pincode}`,
+        address_id: selectedAddress.address_id,
         slot_id: selectedSlotId,
         slot_date: deliveryDate,
         payment_method: paymentMethod,
-        items,
+        items: cartProductList.map((item) => ({
+          id: item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+        })),
       };
 
       const res = await fetch(`${BASE_URL}/api/orders`, {
@@ -119,16 +142,13 @@ const CheckoutScreen = () => {
       const data = await res.json();
       if (res.ok) {
         clearCart();
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'OrderSuccess' }],
-        });
+        navigation.reset({ index: 0, routes: [{ name: 'OrderSuccess' }] });
       } else {
-        Alert.alert('Error', data.error || 'Order placement failed');
+        Alert.alert('Order Failed', data.error || 'Something went wrong.');
       }
-    } catch (err) {
-      console.error('Order error:', err);
-      Alert.alert('Error', 'Something went wrong');
+    } catch (error) {
+      console.error('Order Placement Error:', error);
+      Alert.alert('Error', 'Something went wrong while placing the order.');
     }
   };
 
@@ -142,35 +162,45 @@ const CheckoutScreen = () => {
             {addresses.map((addr) => (
               <TouchableOpacity
                 key={addr.address_id}
-                style={[styles.selectBtn, selectedAddress?.address_id === addr.address_id && styles.selectBtnActive]}
+                style={[
+                  styles.selectBtn,
+                  selectedAddress?.address_id === addr.address_id && styles.selectBtnActive,
+                ]}
                 onPress={() => setSelectedAddress(addr)}
               >
-                <Text style={[styles.selectBtnText, selectedAddress?.address_id === addr.address_id && styles.selectBtnTextActive]}>
+                <Text style={styles.selectBtnText}>
                   {addr.address_line1}, {addr.city}, {addr.pincode}
                 </Text>
+                {addr.floor_no && <Text style={styles.optionalText}>Floor: {addr.floor_no}</Text>}
+                {addr.landmark && <Text style={styles.optionalText}>Landmark: {addr.landmark}</Text>}
               </TouchableOpacity>
             ))}
 
             <Text style={styles.sectionTitle}>Select Delivery Date</Text>
             <View style={styles.buttonGroup}>
-              {Array.from({ length: 3 }).map((_, i) => {
-                const now = new Date();
-                const base = now.getHours() >= 9 ? new Date(now.setDate(now.getDate() + 1)) : now;
-                const date = new Date(base);
-                date.setDate(base.getDate() + i);
-                const formatted = date.toISOString().split('T')[0];
-                return (
-                  <TouchableOpacity
-                    key={formatted}
-                    style={[styles.selectBtn, deliveryDate === formatted && styles.selectBtnActive]}
-                    onPress={() => setDeliveryDate(formatted)}
-                  >
-                    <Text style={[styles.selectBtnText, deliveryDate === formatted && styles.selectBtnTextActive]}>
-                      {formatted}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
+              {(() => {
+                const base = getBaseDeliveryDate();
+                return Array.from({ length: 3 }).map((_, i) => {
+                  const date = new Date(base);
+                  date.setDate(base.getDate() + i);
+                  const formatted =
+                    date.getFullYear() + '-' +
+                    String(date.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(date.getDate()).padStart(2, '0');
+                  return (
+                    <TouchableOpacity
+                      key={formatted}
+                      style={[
+                        styles.selectBtn,
+                        deliveryDate === formatted && styles.selectBtnActive,
+                      ]}
+                      onPress={() => setDeliveryDate(formatted)}
+                    >
+                      <Text style={styles.selectBtnText}>{formatted}</Text>
+                    </TouchableOpacity>
+                  );
+                });
+              })()}
             </View>
 
             <Text style={styles.sectionTitle}>Select Delivery Time</Text>
@@ -178,12 +208,13 @@ const CheckoutScreen = () => {
               {availableSlots.map((slot) => (
                 <TouchableOpacity
                   key={slot.slot_id}
-                  style={[styles.selectBtn, slot.slot_id === selectedSlotId && styles.selectBtnActive]}
+                  style={[
+                    styles.selectBtn,
+                    slot.slot_id === selectedSlotId && styles.selectBtnActive,
+                  ]}
                   onPress={() => setSelectedSlotId(slot.slot_id)}
                 >
-                  <Text style={[styles.selectBtnText, slot.slot_id === selectedSlotId && styles.selectBtnTextActive]}>
-                    {slot.slot_details}
-                  </Text>
+                  <Text style={styles.selectBtnText}>{slot.slot_details}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -203,7 +234,6 @@ const CheckoutScreen = () => {
                 <Text>₹{item.quantity * item.price}</Text>
               </View>
             ))}
-
             <View style={styles.cartItem}>
               <Text style={{ fontWeight: '600' }}>Subtotal</Text>
               <Text>₹{subtotal}</Text>
@@ -220,14 +250,14 @@ const CheckoutScreen = () => {
             <Text style={styles.sectionTitle}>Payment Method</Text>
             {paymentOptions.map((option) => (
               <TouchableOpacity
-                key={option}
-                onPress={() => setPaymentMethod(option)}
+                key={option.value}
+                onPress={() => setPaymentMethod(option.value)}
                 style={[
                   styles.paymentOption,
-                  paymentMethod === option && styles.selectedPayment,
+                  paymentMethod === option.value && styles.selectedPayment,
                 ]}
               >
-                <Text>{option}</Text>
+                <Text>{option.label}</Text>
               </TouchableOpacity>
             ))}
 

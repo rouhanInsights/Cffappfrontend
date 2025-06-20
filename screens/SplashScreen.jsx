@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 export default function SplashScreen({ navigation }) {
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -24,10 +24,10 @@ export default function SplashScreen({ navigation }) {
 
     checkLoginStatus();
   }, []);
-
+const logoimg=resolveAssetSource(require('../images/logo.asset.png'))
   return (
     <View style={styles.container}>
-      <Image source={require('../assets/Logo.png')} style={{ width: 300, height: 100 }} />
+      <Image source={logoimg} style={{ width: 300, height: 100 }} />
     </View>
   );
 }

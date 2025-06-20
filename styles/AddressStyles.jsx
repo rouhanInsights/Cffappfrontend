@@ -33,6 +33,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
+  optionalInput: {
+    backgroundColor: '#fcfcfc',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    fontSize: 15,
+    fontStyle: 'italic',
+  },
+
   saveButton: {
     backgroundColor: '#2e7d32',
     paddingVertical: 14,
@@ -60,6 +71,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 4,
     color: '#333',
+  },
+
+  addrDetail: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 2,
   },
 
   addrActions: {
@@ -91,6 +108,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     overflow: 'hidden',
   },
+
   fab: {
     position: 'absolute',
     bottom: 24,
@@ -107,7 +125,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-  
 });
 
 export default styles;

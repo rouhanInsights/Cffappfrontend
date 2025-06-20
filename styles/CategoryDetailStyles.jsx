@@ -1,93 +1,116 @@
 import { StyleSheet } from 'react-native';
 
-export default StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f9f9f9',
-    paddingHorizontal: 12,
-    paddingTop: 10,
+    padding: 12,
+    paddingBottom: 80, // leave space for cart popup
   },
   heading: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#2e7d32',
-    marginBottom: 10,
-    textAlign: 'center',
+    marginVertical: 10,
+    marginLeft: 6,
+  },
+  filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: '#f0f0f0',
+    marginHorizontal: 6,
+  },
+  filterButtonText: {
+    fontSize: 14,
+    color: '#2e7d32',
+    fontWeight: '600',
   },
   list: {
-    paddingBottom: 30,
+    paddingBottom: 120, // avoid being overlapped by popup
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-    marginHorizontal: 8,
-    elevation: 3,
-    shadowColor: '#aaa',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 12,
+    elevation: 2,
   },
   image: {
-    width: '100%',
-    height: 160,
+    width: "100%",
+    height: 200,
     borderRadius: 10,
-    resizeMode: 'cover',
     marginBottom: 8,
+     resizeMode: 'contain'
   },
   name: {
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+    fontWeight: 'bold',
     color: '#333',
+    marginBottom: 4,
   },
   price: {
-    fontSize: 15,
+    fontSize: 14,
     marginBottom: 8,
   },
   strike: {
-    color: '#888',
     textDecorationLine: 'line-through',
+    color: '#888',
   },
   sale: {
-    color: '#e53935',
+    color: '#d32f2f',
     fontWeight: 'bold',
   },
   addButton: {
     backgroundColor: '#2e7d32',
     paddingVertical: 8,
+    paddingHorizontal: 14,
     borderRadius: 6,
-    alignItems: 'center',
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    marginTop: 6,
   },
   addButtonText: {
     color: '#fff',
-    fontWeight: '600',
+    marginLeft: 6,
+    fontWeight: 'bold',
   },
   qtySelector: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: 16,
+    justifyContent: 'space-between',
+    marginTop: 6,
+    paddingHorizontal: 12,
   },
   qtyText: {
     fontSize: 16,
     fontWeight: 'bold',
+    marginHorizontal: 10,
   },
-  filterButton: {
-    borderWidth: 1,
-    borderColor: '#2e7d32',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
-    backgroundColor: '#fff',
+  cartPopup: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    backgroundColor: '#2e7d32',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 8,
+    elevation: 5,
+    zIndex: 100,
   },
-  filterButtonText: {
-    color: '#2e7d32',
-    fontWeight: '500',
+  cartPopupText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  viewCartText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+    textDecorationLine: 'underline',
   },
 });
+
+export default styles;
