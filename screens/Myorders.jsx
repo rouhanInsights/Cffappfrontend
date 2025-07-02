@@ -17,8 +17,8 @@ import NavBar from '../components/Navbar';
 import styles from "../styles/MyOrderStyles";
 import RNFS from 'react-native-fs';
 import FileViewer from 'react-native-file-viewer';
-
-const BASE_URL = 'http://10.0.2.2:5000';
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
+const BASE_URL = API_BASE_URL;
 
 export default function MyOrders() {
   const [orders, setOrders] = useState([]);

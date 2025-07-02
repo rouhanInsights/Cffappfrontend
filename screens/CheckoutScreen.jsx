@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 import {
   View,
   Text,
@@ -38,7 +39,7 @@ const CheckoutScreen = () => {
   const [isAfter9am, setIsAfter9am] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const BASE_URL = 'http://10.0.2.2:5000';
+  const BASE_URL = API_BASE_URL;
 
   const paymentOptions = [
     { value: 'COD', label: 'Cash on Delivery' },

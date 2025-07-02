@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, TextInput, Alert, FlatList, StyleSheet, ScrollView
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import styles from '../styles/AddressStyles';
-
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 export default function MyAddressScreen() {
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
@@ -22,7 +22,7 @@ export default function MyAddressScreen() {
   });
   const [showForm, setShowForm] = useState(false);
 
-  const BASE_URL = 'http://10.0.2.2:5000'; // replace with your actual backend URL
+  const BASE_URL = API_BASE_URL; // replace with your actual backend URL
 
   const fetchAddresses = async () => {
     const token = await AsyncStorage.getItem('token');

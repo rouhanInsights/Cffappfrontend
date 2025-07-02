@@ -13,8 +13,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import styles from '../styles/ProductDetailsStyles';
 import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar';
-
-const BASE_URL = 'http://10.0.2.2:5000'; // Update to your backend IP or domain
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
+const BASE_URL = API_BASE_URL; // Update to your backend IP or domain
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;

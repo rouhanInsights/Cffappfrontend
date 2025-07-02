@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 import {
   View,
   Text,
@@ -16,7 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import styles from '../styles/EditProfileStyles';
 
-const BASE_URL = 'http://10.0.2.2:5000';
+const BASE_URL = API_BASE_URL;
 
 const getLocalDateString = (date) => {
   const year = date.getFullYear();

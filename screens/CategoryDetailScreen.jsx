@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@env';
 import {
   View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, ScrollView
 } from 'react-native';
@@ -8,7 +9,7 @@ import { useCart } from '../contexts/CartContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavBar from '../components/Navbar';
 
-const BASE_URL = 'http://10.0.2.2:5000';
+const BASE_URL = API_BASE_URL;
 
 const ALL_CATEGORIES = [
   'Exclusive Fish & Meat',

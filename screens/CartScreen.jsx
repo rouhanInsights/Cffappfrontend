@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 import {
   View,
   Text,
@@ -12,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import NavBar from '../components/Navbar';
 import styles from '../styles/CartStyles';
 
-const BASE_URL = 'http://10.0.2.2:5000';
+const BASE_URL = API_BASE_URL;
 
 const CartScreen = () => {
   const { cartItems, addToCart, incrementQty, decrementQty } = useCart();

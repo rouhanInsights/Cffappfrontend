@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 import {
   View,
   ScrollView,
@@ -9,15 +10,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import styles from '../styles/HomeStyles';
 import NavBar from '../components/Navbar';
-import ProductSection from '../screens/ProductSection';
+
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import TopOfWeekSection from '../sections/TopOfWeekSection';
+import TopOffersSection from '../sections/TopOffersSection';
 import AllProductsSection from '../sections/AllProductsSection';
-import ExclusiveOffersSection from '../sections/ExclusiveOffersSection';
+import BestSellersSection from '../sections/BestSellersSection';
 import PreviouslyBoughtSection from '../sections/PreviouslyBoughtSection';
 
-const BASE_URL = 'http://10.0.2.2:5000';
+const BASE_URL = API_BASE_URL; // Ensure you have the correct path to your .env file';
 
 const HeroSection = () => {
    const heroImage = resolveAssetSource(require('../images/hero.asset.jpg')); 
@@ -97,9 +98,9 @@ const HomeScreen = () => {
           <ActivityIndicator size="large" color="#2e7d32" style={{ marginTop: 50 }} />
         ) : (
           <>
-            <TopOfWeekSection products={products.slice(6, 20)} />
+            <TopOffersSection products={products.slice(6, 20)} />
             <AllProductsSection products={products} />
-            <ExclusiveOffersSection products={products.slice(20)} />
+            <BestSellersSection products={products.slice(20)} />
             {Array.isArray(previouslyBought) && previouslyBought.length > 0 && (
               <PreviouslyBoughtSection products={previouslyBought} />
             )}

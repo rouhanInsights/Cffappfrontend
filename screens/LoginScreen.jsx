@@ -5,7 +5,7 @@ import styles from '../styles/LoginStyles';
 import { CommonActions } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource'; 
-
+import { API_BASE_URL } from '@env'; // Ensure you have the correct path to your .env file
 const slides = [
   {
     id: '1',
@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }) {
   const [resendCooldown, setResendCooldown] = useState(false); // For cooldown functionality
   const [countdown, setCountdown] = useState(30); // 30-second cooldown for resend
 
-  const BASE_URL = 'http://10.0.2.2:5000'; // 🔁 Replace with your actual local IP
+  const BASE_URL = API_BASE_URL; // 🔁 Replace with your actual local IP
 
   // Slider autoplay
   useEffect(() => {
