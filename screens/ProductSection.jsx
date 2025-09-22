@@ -100,7 +100,7 @@ const ProductSection = ({ title, products }) => {
               onPress={() => navigation.navigate('ViewAllProducts', { title, products })}
             >
               <Text style={styles.viewAllText}>View All</Text>
-              <Ionicons name="chevron-forward-circle" size={28} color="#81991f" />
+              <Ionicons name="chevron-forward-circle" size={28} color="#006b3d" />
             </TouchableOpacity>
           ) : (
             renderProduct({ item })
